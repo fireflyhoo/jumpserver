@@ -2,6 +2,7 @@
 
 [![Python3](https://img.shields.io/badge/python-3.6-green.svg?style=plastic)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/django-2.2-brightgreen.svg?style=plastic)](https://www.djangoproject.com/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/jumpserver/jms_all.svg)](https://hub.docker.com/u/jumpserver)
 
 JumpServer 是全球首款开源的堡垒机，使用 GNU GPL v2.0 开源协议，是符合 4A 规范的运维安全审计系统。
 
@@ -15,12 +16,28 @@ JumpServer 采纳分布式架构，支持多机房跨区域部署，支持横向
 
 ## 特色优势
 
-- 开源: 零门槛，线上快速获取和安装；
-- 分布式: 轻松支持大规模并发访问；
+- 开源: 零门槛，线上快速获取和安装, 修复版本视情况而定；
+, 修复版本视情况而定- 分布式: 轻松支持大规模并发访问；
 - 无插件: 仅需浏览器，极致的 Web Terminal 使用体验；
 - 多云支持: 一套系统，同时管理不同云上面的资产；
 - 云端存储: 审计录像云端存储，永不丢失；
 - 多租户: 一套系统，多个子公司和部门同时使用。
+
+## 版本说明
+
+自 v2.0.0 发布后， JumpServer 版本号命名将变更为：v大版本.功能版本.Bug修复版本。比如：
+
+```
+v2.0.1 是 v2.0.0 之后的Bug修复版本；
+v2.1.0 是 v2.0.0 之后的功能版本。
+```
+
+像其它优秀开源项目一样，JumpServer 每个月会发布一个功能版本，并同时维护 3 个功能版本。比如：
+
+```
+在 v2.4 发布前，我们会同时维护 v2.1、v2.2、v2.3；
+在 v2.4 发布后，我们会同时维护 v2.2、v2.3、v2.4；v2.1 会停止维护。
+```
 
 ## 功能列表
 

@@ -3,6 +3,7 @@ import uuid
 
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from django.conf import settings
 
 from common.permissions import (
     IsCurrentUserOrReadOnly
@@ -14,6 +15,7 @@ from .mixins import UserQuerysetMixin
 __all__ = [
     'UserResetPasswordApi', 'UserResetPKApi',
     'UserProfileApi', 'UserUpdatePKApi',
+    'UserPasswordApi', 'UserPublicKeyApi'
 ]
 
 
@@ -55,14 +57,31 @@ class UserUpdatePKApi(UserQuerysetMixin, generics.UpdateAPIView):
         user.save()
 
 
-class UserProfileApi(generics.RetrieveAPIView):
+class UserProfileApi(generics.RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = serializers.UserSerializer
+    serializer_class = serializers.UserProfileSerializer
 
     def get_object(self):
         return self.request.user
 
     def retrieve(self, request, *args, **kwargs):
-        age = request.session.get_expiry_age()
-        request.session.set_expiry(age)
+        if not settings.SESSION_EXPIRE_AT_BROWSER_CLOSE:
+            age = request.session.get_expiry_age()
+            request.session.set_expiry(age)
         return super().retrieve(request, *args, **kwargs)
+
+
+class UserPasswordApi(generics.RetrieveUpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.UserUpdatePasswordSerializer
+
+    def get_object(self):
+        return self.request.user
+
+
+class UserPublicKeyApi(generics.RetrieveUpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.UserUpdatePublicKeySerializer
+
+    def get_object(self):
+        return self.request.user

@@ -10,7 +10,7 @@ from common.permissions import IsSuperUserOrAppUser
 from .models import Organization
 from .serializers import OrgSerializer, OrgReadSerializer, \
     OrgMembershipUserSerializer, OrgMembershipAdminSerializer, \
-    OrgAllUserSerializer
+    OrgAllUserSerializer, OrgRetrieveSerializer
 from users.models import User, UserGroup
 from assets.models import Asset, Domain, AdminUser, SystemUser, Label
 from perms.models import AssetPermission
@@ -22,16 +22,19 @@ logger = get_logger(__file__)
 
 
 class OrgViewSet(BulkModelViewSet):
+    filter_fields = ('name',)
+    search_fields = ('name', 'comment')
     queryset = Organization.objects.all()
     serializer_class = OrgSerializer
     permission_classes = (IsSuperUserOrAppUser,)
     org = None
 
     def get_serializer_class(self):
-        if self.action in ('list', 'retrieve'):
-            return OrgReadSerializer
-        else:
-            return super().get_serializer_class()
+        mapper = {
+            'list': OrgReadSerializer,
+            'retrieve': OrgRetrieveSerializer
+        }
+        return mapper.get(self.action, super().get_serializer_class())
 
     def get_data_from_model(self, model):
         if model == User:

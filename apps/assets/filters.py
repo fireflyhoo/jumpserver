@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 
-import coreapi
+from rest_framework.compat import coreapi, coreschema
 from rest_framework import filters
 from django.db.models import Q
 
@@ -65,7 +65,7 @@ class AssetByNodeFilterBackend(filters.BaseFilterBackend):
 
 
 class LabelFilterBackend(filters.BaseFilterBackend):
-    sep = '#'
+    sep = ':'
     query_arg = 'label'
 
     def get_schema_fields(self, view):
@@ -84,6 +84,8 @@ class LabelFilterBackend(filters.BaseFilterBackend):
 
         q = None
         for kv in labels_query:
+            if '#' in kv:
+                self.sep = '#'
             if self.sep not in kv:
                 continue
             key, value = kv.strip().split(self.sep)[:2]
@@ -115,3 +117,23 @@ class AssetRelatedByNodeFilterBackend(AssetByNodeFilterBackend):
     def perform_query(pattern, queryset):
         return queryset.filter(asset__nodes__key__regex=pattern).distinct()
 
+
+class IpInFilterBackend(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        ips = request.query_params.get('ips')
+        if not ips:
+            return queryset
+        ip_list = [i.strip() for i in ips.split(',')]
+        queryset = queryset.filter(ip__in=ip_list)
+        return queryset
+
+    def get_schema_fields(self, view):
+        return [
+            coreapi.Field(
+                name='ips', location='query', required=False, type='string',
+                schema=coreschema.String(
+                    title='ips',
+                    description='ip in filter'
+                )
+            )
+        ]

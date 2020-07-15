@@ -14,9 +14,11 @@ from common.mixins import CommonApiMixin
 from common.utils import get_logger
 from orgs.utils import current_org
 from .. import serializers
+from ..serializers import UserSerializer, UserRetrieveSerializer
 from .mixins import UserQuerysetMixin
 from ..models import User
 from ..signals import post_user_create
+from ..filters import OrgRoleUserFilterBackend
 
 
 logger = get_logger(__name__)
@@ -27,13 +29,14 @@ __all__ = [
 
 
 class UserViewSet(CommonApiMixin, UserQuerysetMixin, BulkModelViewSet):
-    filter_fields = ('username', 'email', 'name', 'id')
+    filter_fields = ('username', 'email', 'name', 'id', 'source')
     search_fields = filter_fields
-    serializer_classes = {
-        'default': serializers.UserSerializer,
-        'display': serializers.UserDisplaySerializer
-    }
     permission_classes = (IsOrgAdmin, CanUpdateDeleteUser)
+    serializer_classes = {
+        'default': UserSerializer,
+        'retrieve': UserRetrieveSerializer
+    }
+    extra_filter_backends = [OrgRoleUserFilterBackend]
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related('groups')
